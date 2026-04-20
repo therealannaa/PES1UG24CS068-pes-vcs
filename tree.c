@@ -186,24 +186,29 @@ static int compare_index_by_path(const void *a, const void *b) {
 //
 // Returns 0 on success, -1 on error.
 int tree_from_index(ObjectID *id_out) {
-    Index index;
-    if (index_load(&index) != 0) return -1;
+    // Read .pes/index directly so tree.o has no dependency on index.o
+    // (test_tree doesn't link index.o per the provided Makefile)
+    FILE *f = fopen(INDEX_FILE, "r");
+    if (!f) return -1;
 
-    if (index.count == 0) {
-        // Empty index: write an empty tree
-        Tree empty;
-        empty.count = 0;
-        void *data;
-        size_t len;
-        if (tree_serialize(&empty, &data, &len) != 0) return -1;
-        int rc = object_write(OBJ_TREE, data, len, id_out);
-        free(data);
-        return rc;
+    IndexEntry entries[MAX_INDEX_ENTRIES];
+    int count = 0;
+
+    while (count < MAX_INDEX_ENTRIES) {
+        IndexEntry *e = &entries[count];
+        char hex[HASH_HEX_SIZE + 1];
+        unsigned long long mtime;
+        unsigned int size;
+        int n = fscanf(f, "%o %64s %llu %u %511s\n",
+                       &e->mode, hex, &mtime, &size, e->path);
+        if (n != 5) break;
+        if (hex_to_hash(hex, &e->hash) != 0) break;
+        e->mtime_sec = (uint64_t)mtime;
+        e->size      = (uint32_t)size;
+        count++;
     }
+    fclose(f);
 
-    // Sort entries by path to group directories together
-    qsort(index.entries, index.count, sizeof(IndexEntry), compare_index_by_path);
-
-    // Build the tree recursively from the root level
-    return write_tree_level(index.entries, index.count, "", id_out);
+    return write_tree_level(entries, count, "", id_out);
 }
+
