@@ -181,27 +181,29 @@ static int compare_index_entries(const void *a, const void *b) {
 // Save the index to .pes/index atomically.
 // Returns 0 on success, -1 on error.
 int index_save(const Index *index) {
-    // Sort entries by path first
-    Index sorted = *index;
-    qsort(sorted.entries, sorted.count, sizeof(IndexEntry), compare_index_entries);
+    // Sort entries by path first — use heap alloc (Index struct is ~5.6MB, too large for stack)
+    IndexEntry *sorted = malloc(index->count * sizeof(IndexEntry));
+    if (!sorted && index->count > 0) return -1;
+    memcpy(sorted, index->entries, index->count * sizeof(IndexEntry));
+    qsort(sorted, index->count, sizeof(IndexEntry), compare_index_entries);
 
     // Write to a temp file
     char tmp_path[] = INDEX_FILE ".tmp";
     FILE *f = fopen(tmp_path, "w");
-    if (!f) return -1;
+    if (!f) { free(sorted); return -1; }
 
-    for (int i = 0; i < sorted.count; i++) {
-        const IndexEntry *entry = &sorted.entries[i];
+    for (int i = 0; i < index->count; i++) {
         char hex[HASH_HEX_SIZE + 1];
-        hash_to_hex(&entry->hash, hex);
+        hash_to_hex(&sorted[i].hash, hex);
 
         fprintf(f, "%o %s %llu %u %s\n",
-                entry->mode,
+                sorted[i].mode,
                 hex,
-                (unsigned long long)entry->mtime_sec,
-                entry->size,
-                entry->path);
+                (unsigned long long)sorted[i].mtime_sec,
+                sorted[i].size,
+                sorted[i].path);
     }
+    free(sorted);
 
     // Flush userspace buffers, sync to disk
     fflush(f);
