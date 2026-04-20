@@ -1,9 +1,9 @@
 # PES-VCS Lab Report
 
-**Name:** [Your Full Name]  
-**SRN:** [PESXUG24CSYYY]  
-**Section:** [Your Section]  
-**Date:** [Submission Date]
+**Name:** Annamalai N  
+**SRN:** PES1UG24CS068  
+**Section:** 4B  
+**Date:** 20-04-2026
 
 ---
 
@@ -31,38 +31,11 @@
 
 ### Screenshot 1A — `./test_objects` output
 
-> **Replace this line with your screenshot of `./test_objects` showing all three PASS lines.**
-
-```
-[SCREENSHOT 1A HERE]
-```
-
-Expected output for reference:
-```
-Stored blob with hash: <64-char hex string>
-Object stored at: .pes/objects/XX/YYYYYY...
-PASS: blob storage
-PASS: deduplication
-PASS: integrity check
-
-All Phase 1 tests passed.
-```
+![Screenshot 1A](screenshots/1A.png)
 
 ### Screenshot 1B — Sharded directory structure
 
-> **Replace this line with your screenshot of `find .pes/objects -type f`**
-
-```
-[SCREENSHOT 1B HERE]
-```
-
-Expected output resembles:
-```
-.pes/objects/2f/8a3b5c7d9e...
-.pes/objects/a1/9c4e6f8a0b...
-```
-
----
+![Screenshot 1B](screenshots/1B.png)
 
 ## Phase 2 — Tree Objects
 
@@ -76,32 +49,11 @@ Because `tree_serialize` internally sorts entries by name using `qsort`, the ser
 
 ### Screenshot 2A — `./test_tree` output
 
-> **Replace this line with your screenshot of `./test_tree` showing both PASS lines.**
-
-```
-[SCREENSHOT 2A HERE]
-```
-
-Expected output:
-```
-Serialized tree: XX bytes
-PASS: tree serialize/parse roundtrip
-PASS: tree deterministic serialization
-
-All Phase 2 tests passed.
-```
+![Screenshot 2A](screenshots/2A.png)
 
 ### Screenshot 2B — Raw binary tree object (xxd)
 
-> **Replace this line with your screenshot of `xxd .pes/objects/XX/YYY... | head -20`**
-
-```
-[SCREENSHOT 2B HERE]
-```
-
-The output shows the binary tree format: ASCII octal mode, a space, the filename as ASCII, a null byte, then 32 raw bytes of SHA-256 hash — all concatenated with no other separators.
-
----
+![Screenshot 2B](screenshots/2B.png)
 
 ## Phase 3 — Index / Staging Area
 
@@ -117,40 +69,11 @@ The output shows the binary tree format: ASCII octal mode, a space, the filename
 
 ### Screenshot 3A — `pes init` → `pes add` → `pes status`
 
-> **Replace this line with your screenshot of the three commands and their output.**
-
-```
-[SCREENSHOT 3A HERE]
-```
-
-Expected output of `./pes status`:
-```
-Staged changes:
-  staged:     file1.txt
-  staged:     file2.txt
-
-Unstaged changes:
-  (nothing to show)
-
-Untracked files:
-  (nothing to show)
-```
+![Screenshot 3A](screenshots/3A.png)
 
 ### Screenshot 3B — `cat .pes/index`
 
-> **Replace this line with your screenshot of `cat .pes/index`.**
-
-```
-[SCREENSHOT 3B HERE]
-```
-
-Expected format:
-```
-100644 a1b2c3d4...  1699900000 11 file1.txt
-100644 f7e8d9c0...  1699900100 13 file2.txt
-```
-
----
+![Screenshot 3B](screenshots/3B.png)
 
 ## Phase 4 — Commits and History
 
@@ -162,69 +85,19 @@ The function first calls `tree_from_index` to build the tree snapshot of the cur
 
 ### Screenshot 4A — `./pes log` with three commits
 
-> **Replace this line with your screenshot of `./pes log` output.**
-
-```
-[SCREENSHOT 4A HERE]
-```
-
-Expected output:
-```
-commit <64-char hash>
-Author: Your Name <PESXUG24CS042>
-Date:   <unix timestamp>
-
-    Add farewell
-
-commit <64-char hash>
-Author: Your Name <PESXUG24CS042>
-Date:   <unix timestamp>
-
-    Add world
-
-commit <64-char hash>
-Author: Your Name <PESXUG24CS042>
-Date:   <unix timestamp>
-
-    Initial commit
-```
+![Screenshot 4A](screenshots/4A.png)
 
 ### Screenshot 4B — `find .pes -type f | sort`
 
-> **Replace this line with your screenshot of the object store contents after three commits.**
-
-```
-[SCREENSHOT 4B HERE]
-```
+![Screenshot 4B](screenshots/4B.png)
 
 ### Screenshot 4C — Reference chain
 
-> **Replace this line with your screenshot of `cat .pes/refs/heads/main` and `cat .pes/HEAD`.**
+![Screenshot 4C](screenshots/4C.png)
 
-```
-[SCREENSHOT 4C HERE]
-```
+### Final Integration Test
 
-Expected:
-```
-$ cat .pes/refs/heads/main
-a1b2c3d4e5f6...
-
-$ cat .pes/HEAD
-ref: refs/heads/main
-```
-
----
-
-## Integration Test
-
-> **Replace this line with your screenshot of `make test-integration` passing fully.**
-
-```
-[FINAL INTEGRATION TEST SCREENSHOT HERE]
-```
-
----
+![Integration Test](screenshots/integration.png)
 
 ## Phase 5 — Branching and Checkout (Analysis)
 
